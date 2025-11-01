@@ -8,9 +8,9 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { RootStackParamList, OnboardingSlide } from '../types';
 import { theme } from '../theme';
-import { useAppStore } from '../store';
 import { ONBOARDING_SLIDES } from '../constants';
 import Button from '../components/Button';
 
@@ -28,9 +28,6 @@ interface Props {
 export default function OnboardingScreen({ navigation }: Props) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
-  const setOnboardingComplete = useAppStore(
-    (state) => state.setOnboardingComplete
-  );
 
   const isLastSlide = currentIndex === ONBOARDING_SLIDES.length - 1;
 
@@ -44,12 +41,19 @@ export default function OnboardingScreen({ navigation }: Props) {
     }
   };
 
+  const handlePrevious = () => {
+    if (currentIndex > 0) {
+      const prevIndex = currentIndex - 1;
+      flatListRef.current?.scrollToIndex({ index: prevIndex, animated: true });
+      setCurrentIndex(prevIndex);
+    }
+  };
+
   const handleSkip = () => {
     handleFinish();
   };
 
   const handleFinish = () => {
-    setOnboardingComplete();
     navigation.replace('PhotoUpload');
   };
 
@@ -65,9 +69,21 @@ export default function OnboardingScreen({ navigation }: Props) {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
-        <Text style={styles.skipText}>Skip</Text>
-      </TouchableOpacity>
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          {currentIndex > 0 && (
+            <TouchableOpacity onPress={handlePrevious} style={styles.backButton}>
+              <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.text} />
+            </TouchableOpacity>
+          )}
+        </View>
+        <Text style={styles.stepIndicator}>
+          Step {currentIndex + 1} of {ONBOARDING_SLIDES.length}
+        </Text>
+        <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
+          <Text style={styles.skipText}>Skip</Text>
+        </TouchableOpacity>
+      </View>
 
       <FlatList
         ref={flatListRef}
@@ -95,10 +111,22 @@ export default function OnboardingScreen({ navigation }: Props) {
           ))}
         </View>
 
-        <Button
-          title={isLastSlide ? "Let's Start" : 'Next'}
-          onPress={handleNext}
-        />
+        <View style={styles.navigationButtons}>
+          {currentIndex > 0 && (
+            <TouchableOpacity
+              style={styles.previousButton}
+              onPress={handlePrevious}
+            >
+              <Text style={styles.previousButtonText}>Previous</Text>
+            </TouchableOpacity>
+          )}
+
+          <Button
+            title={isLastSlide ? "I'm Ready to Start" : 'Next'}
+            onPress={handleNext}
+            style={styles.nextButton}
+          />
+        </View>
       </View>
     </View>
   );
@@ -109,28 +137,59 @@ interface SlideItemProps {
 }
 
 function SlideItem({ slide }: SlideItemProps) {
-  // Map slide ID to emoji icons
-  const getIcon = (id: number) => {
-    switch (id) {
-      case 1:
-        return '👋';
-      case 2:
-        return '📷';
-      case 3:
-        return '🔒';
-      default:
-        return '✨';
-    }
+  // Render additional content for the 5 angles slide
+  const renderAnglesGrid = () => {
+    if (slide.id !== 3) return null;
+
+    return (
+      <View style={styles.anglesGrid}>
+        <View style={styles.angleItem}>
+          <View style={styles.angleIcon}>
+            <MaterialCommunityIcons name="account" size={24} color={theme.colors.textSecondary} />
+          </View>
+          <Text style={styles.angleLabel}>Front</Text>
+        </View>
+        <View style={styles.angleItem}>
+          <View style={styles.angleIcon}>
+            <MaterialCommunityIcons name="account-outline" size={24} color={theme.colors.textSecondary} />
+          </View>
+          <Text style={styles.angleLabel}>Back</Text>
+        </View>
+        <View style={styles.angleItem}>
+          <View style={styles.angleIcon}>
+            <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.textSecondary} />
+          </View>
+          <Text style={styles.angleLabel}>Left</Text>
+        </View>
+        <View style={styles.angleItem}>
+          <View style={styles.angleIcon}>
+            <MaterialCommunityIcons name="arrow-right" size={24} color={theme.colors.textSecondary} />
+          </View>
+          <Text style={styles.angleLabel}>Right</Text>
+        </View>
+        <View style={styles.angleItem}>
+          <View style={styles.angleIcon}>
+            <MaterialCommunityIcons name="arrow-up" size={24} color={theme.colors.textSecondary} />
+          </View>
+          <Text style={styles.angleLabel}>Top</Text>
+        </View>
+      </View>
+    );
   };
 
   return (
     <View style={styles.slide}>
       <View style={styles.slideContent}>
         <View style={styles.iconContainer}>
-          <Text style={styles.slideIcon}>{getIcon(slide.id)}</Text>
+          <MaterialCommunityIcons
+            name={slide.icon as any || 'help-circle'}
+            size={80}
+            color={theme.colors.primary}
+          />
         </View>
         <Text style={styles.slideTitle}>{slide.title}</Text>
         <Text style={styles.slideDescription}>{slide.description}</Text>
+        {renderAnglesGrid()}
       </View>
     </View>
   );
@@ -141,16 +200,35 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: theme.colors.background,
   },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.md,
+    paddingTop: 50,
+  },
+  headerLeft: {
+    width: 48,
+  },
+  backButton: {
+    width: 48,
+    height: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stepIndicator: {
+    ...theme.typography.body,
+    fontWeight: '700',
+    color: theme.colors.text,
+  },
   skipButton: {
-    position: 'absolute',
-    top: 50,
-    right: theme.spacing.lg,
-    zIndex: 10,
     padding: theme.spacing.sm,
   },
   skipText: {
     ...theme.typography.body,
-    color: theme.colors.primary,
+    fontWeight: '700',
+    color: theme.colors.textSecondary,
   },
   slide: {
     width: SCREEN_WIDTH,
@@ -166,7 +244,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     width: 150,
     height: 150,
-    backgroundColor: theme.colors.primaryLight,
+    backgroundColor: `${theme.colors.primary}20`,
     borderRadius: theme.borderRadius.full,
     alignItems: 'center',
     justifyContent: 'center',
@@ -187,8 +265,33 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 24,
   },
+  anglesGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: theme.spacing.xl,
+    gap: theme.spacing.sm,
+  },
+  angleItem: {
+    flex: 1,
+    alignItems: 'center',
+    gap: 8,
+  },
+  angleIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: theme.borderRadius.md,
+    backgroundColor: theme.colors.backgroundLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  angleLabel: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: theme.colors.textSecondary,
+    textAlign: 'center',
+  },
   footer: {
-    paddingHorizontal: theme.spacing.xl,
+    paddingHorizontal: theme.spacing.md,
     paddingBottom: theme.spacing.xl,
     paddingTop: theme.spacing.lg,
   },
@@ -196,7 +299,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: theme.spacing.xl,
+    marginBottom: theme.spacing.lg,
   },
   paginationDot: {
     width: 8,
@@ -208,5 +311,26 @@ const styles = StyleSheet.create({
   paginationDotActive: {
     backgroundColor: theme.colors.primary,
     width: 24,
+  },
+  navigationButtons: {
+    flexDirection: 'row',
+    gap: theme.spacing.md,
+  },
+  previousButton: {
+    height: 48,
+    paddingHorizontal: theme.spacing.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: theme.borderRadius.xl,
+    backgroundColor: theme.colors.surface,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
+  previousButtonText: {
+    ...theme.typography.button,
+    color: theme.colors.text,
+  },
+  nextButton: {
+    flex: 1,
   },
 });

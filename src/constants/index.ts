@@ -3,21 +3,24 @@ import { OnboardingSlide } from '../types';
 export const ONBOARDING_SLIDES: OnboardingSlide[] = [
   {
     id: 1,
-    title: 'Welcome to Hair Photo Upload',
+    title: 'Good Lighting',
     description:
-      'Upload your hair photos easily and securely for professional analysis. We guide you through every step of the process.',
+      'Use natural, even light and avoid shadows. A plain, neutral background works best for clear photos.',
+    icon: 'white-balance-sunny',
   },
   {
     id: 2,
-    title: 'Take Quality Photos',
+    title: 'Clear & Focused',
     description:
-      'We\'ll show you exactly how to capture the best photos. Make sure to take photos from the front, top, and side angles in good lighting.',
+      'Hold your phone at arm\'s length, keep it steady, and ensure your hair is in sharp focus.',
+    icon: 'target',
   },
   {
     id: 3,
-    title: 'Your Privacy Matters',
+    title: '5 Required Angles',
     description:
-      'All photos are securely encrypted and stored. Your data is anonymized and protected according to healthcare standards.',
+      'We need photos from all five angles: Front, Back, Left Side, Right Side, and Top View.',
+    icon: 'image-multiple',
   },
 ];
 
