@@ -14,6 +14,7 @@
     },
     "ios": {
       "supportsTablet": true,
+      "bundleIdentifier": "com.patient.hairupload",
       "infoPlist": {
         "NSCameraUsageDescription": "This app needs access to your camera to capture hair photos for analysis.",
         "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to select hair photos.",
@@ -21,6 +22,7 @@
       }
     },
     "android": {
+      "package": "com.patient.hairupload",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -34,11 +36,15 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
-    "plugins": [
-      "react-native-reanimated/plugin"
-    ],
+    "plugins": [],
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ff7fdcc2-339b-437b-8444-5bde3ba43bd9"
+      }
+    },
+    "owner": "eylul098"
   }
 }
