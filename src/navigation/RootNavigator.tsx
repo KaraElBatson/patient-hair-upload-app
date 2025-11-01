@@ -2,7 +2,6 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import { RootStackParamList } from '../types';
-import { useAppStore } from '../store';
 
 // Import screens (will be created)
 import WelcomeScreen from '../screens/WelcomeScreen';
@@ -17,25 +16,17 @@ import FeedbackScreen from '../screens/FeedbackScreen';
 const Stack = createStackNavigator<RootStackParamList>();
 
 export default function RootNavigator() {
-  const hasCompletedOnboarding = useAppStore(
-    (state) => state.hasCompletedOnboarding
-  );
-
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName={hasCompletedOnboarding ? 'PhotoUpload' : 'Welcome'}
+        initialRouteName="Welcome"
         screenOptions={{
           headerShown: false,
           cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
         }}
       >
-        {!hasCompletedOnboarding && (
-          <>
-            <Stack.Screen name="Welcome" component={WelcomeScreen} />
-            <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-          </>
-        )}
+        <Stack.Screen name="Welcome" component={WelcomeScreen} />
+        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
 
         <Stack.Screen name="PhotoUpload" component={PhotoUploadScreen} />
 
