@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
+import { ActivityIndicator, View, StyleSheet } from 'react-native';
 import { RootStackParamList } from '../types';
+import { useAppStore } from '../store';
+import { theme } from '../theme';
 
 // Import screens (will be created)
 import WelcomeScreen from '../screens/WelcomeScreen';
@@ -26,10 +29,30 @@ import FlowCaptureTopScreen from '../screens/flow/FlowCaptureTopScreen';
 const Stack = createStackNavigator<RootStackParamList>();
 
 export default function RootNavigator() {
+  const hasCompletedOnboarding = useAppStore((state) => state.hasCompletedOnboarding);
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    // Give the store a moment to hydrate from AsyncStorage
+    const timer = setTimeout(() => {
+      setIsReady(true);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!isReady) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={theme.colors.primary} />
+      </View>
+    );
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="FlowWelcome"
+        initialRouteName={hasCompletedOnboarding ? 'PhotoUpload' : 'FlowWelcome'}
         screenOptions={{
           headerShown: false,
           cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
@@ -90,3 +113,12 @@ export default function RootNavigator() {
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: theme.colors.backgroundLight,
+  },
+});

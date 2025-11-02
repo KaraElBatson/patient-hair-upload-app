@@ -13,6 +13,7 @@ import { RouteProp } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { RootStackParamList } from '../../types';
 import { theme } from '../../theme';
+import { useAppStore } from '../../store';
 
 type AngleType = 'Front' | 'Back' | 'Left' | 'Right' | 'Top';
 
@@ -79,6 +80,7 @@ export default function FlowCaptureScreen({ navigation, route, angle }: Props) {
   const [facing, setFacing] = useState<'front' | 'back'>('back');
   const [isProcessing, setIsProcessing] = useState(false);
   const cameraRef = useRef<CameraView>(null);
+  const setOnboardingComplete = useAppStore((state) => state.setOnboardingComplete);
 
   const config = angleConfigs[angle];
 
@@ -99,11 +101,18 @@ export default function FlowCaptureScreen({ navigation, route, angle }: Props) {
         if (config.nextScreen) {
           navigation.navigate(config.nextScreen as any);
         } else {
-          // Last photo captured
+          // Last photo captured - mark onboarding as complete
+          setOnboardingComplete();
           Alert.alert('Success', 'All photos captured successfully!', [
             {
               text: 'Done',
-              onPress: () => navigation.navigate('Welcome' as any),
+              onPress: () => {
+                // Navigate to main app (you can change this to PhotoUpload or another screen)
+                navigation.reset({
+                  index: 0,
+                  routes: [{ name: 'PhotoUpload' as any }],
+                });
+              },
             },
           ]);
         }
