@@ -73,6 +73,15 @@ export type RootStackParamList = {
   UploadProgress: undefined;
   Confirmation: { confirmationId: string };
   Feedback: { uploadId: string };
+  // New 8-screen flow
+  FlowWelcome: undefined;
+  FlowTipLighting: undefined;
+  FlowTipFocus: undefined;
+  FlowCaptureFront: undefined;
+  FlowCaptureBack: undefined;
+  FlowCaptureLeft: undefined;
+  FlowCaptureRight: undefined;
+  FlowCaptureTop: undefined;
 };
 
 // Onboarding types

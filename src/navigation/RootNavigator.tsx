@@ -13,18 +13,39 @@ import UploadProgressScreen from '../screens/UploadProgressScreen';
 import ConfirmationScreen from '../screens/ConfirmationScreen';
 import FeedbackScreen from '../screens/FeedbackScreen';
 
+// Import new flow screens
+import FlowWelcomeScreen from '../screens/flow/FlowWelcomeScreen';
+import FlowTipLightingScreen from '../screens/flow/FlowTipLightingScreen';
+import FlowTipFocusScreen from '../screens/flow/FlowTipFocusScreen';
+import FlowCaptureFrontScreen from '../screens/flow/FlowCaptureFrontScreen';
+import FlowCaptureBackScreen from '../screens/flow/FlowCaptureBackScreen';
+import FlowCaptureLeftScreen from '../screens/flow/FlowCaptureLeftScreen';
+import FlowCaptureRightScreen from '../screens/flow/FlowCaptureRightScreen';
+import FlowCaptureTopScreen from '../screens/flow/FlowCaptureTopScreen';
+
 const Stack = createStackNavigator<RootStackParamList>();
 
 export default function RootNavigator() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Welcome"
+        initialRouteName="FlowWelcome"
         screenOptions={{
           headerShown: false,
           cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
         }}
       >
+        {/* New 8-screen flow */}
+        <Stack.Screen name="FlowWelcome" component={FlowWelcomeScreen} />
+        <Stack.Screen name="FlowTipLighting" component={FlowTipLightingScreen} />
+        <Stack.Screen name="FlowTipFocus" component={FlowTipFocusScreen} />
+        <Stack.Screen name="FlowCaptureFront" component={FlowCaptureFrontScreen} />
+        <Stack.Screen name="FlowCaptureBack" component={FlowCaptureBackScreen} />
+        <Stack.Screen name="FlowCaptureLeft" component={FlowCaptureLeftScreen} />
+        <Stack.Screen name="FlowCaptureRight" component={FlowCaptureRightScreen} />
+        <Stack.Screen name="FlowCaptureTop" component={FlowCaptureTopScreen} />
+
+        {/* Original screens */}
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="Onboarding" component={OnboardingScreen} />
 
