@@ -153,7 +153,7 @@ export const useAppStore = create<AppState>()(
       name: 'patient-hair-upload-storage',
       storage: createJSONStorage(() => AsyncStorage),
       partialize: (state) => ({
-        hasCompletedOnboarding: state.hasCompletedOnboarding,
+        // Don't persist hasCompletedOnboarding so users always see onboarding on app launch
         uploadQueue: state.uploadQueue,
       }),
     }
